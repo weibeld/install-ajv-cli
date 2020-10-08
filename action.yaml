@@ -1,0 +1,38 @@
+name: Install ajv-cli
+description: Installs the ajv-cli npm package (JSON Schema validator) on the job's runner
+author: Daniel Weibel
+runs:
+  using: composite
+  steps:
+    - name: check-os
+      shell: bash
+      run: test "${{ runner.os }}" = Windows && { echo "This action currently does not support Windows runners"; exit 1; } || exit 0
+    - id: vals
+      shell: bash
+      run: |
+        echo "::set-output name=install-dir::${{ runner.temp }}/cache/ajv-cli/src"
+        echo "::set-output name=bin-dir::${{ runner.temp }}/cache/ajv-cli/bin"
+    - id: check-cache
+      shell: bash
+      uses: actions/cache@v2
+      with:
+        key: ajv-cli
+        path: ${{ steps.vals.outputs.install-dir }}
+    - name: install
+      shell: bash
+      run: |
+        if [[ "${{ steps.check-cache.outputs.cache-hit }}" = true ]]; then
+          echo "Restoring ajv-cli installation from cache"
+        else
+          echo "Installing ajv-cli"
+          npm install --prefix "${{ steps.vals.outputs.install-dir }}" ajv-cli 
+        fi
+    - name: expose
+      shell: bash
+      run: |
+        mkdir -p ${{ steps.vals.outputs.bin-dir }}
+        ln -s ${{ steps.vals.outputs.install-dir }}/node_modules/ajv-cli/index.js ${{ steps.vals.outputs.bin-dir }}/ajv
+        echo "PATH=${{ steps.vals.outputs.bin-dir }}:$PATH" >> "$GITHUB_ENV"
+    - name: verify
+      shell: bash
+      run: ajv help &>/dev/null && echo "Installation successful" || { echo "Installation failed"; exit 1; }
