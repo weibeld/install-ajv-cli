@@ -20,8 +20,8 @@ async function main() {
       version = execSync('npm view ajv-cli version').toString().trim();
       core.info(`Latest version of ajv-cli is ${version}`);
     } else if (!execSync('npm view ajv-cli versions').includes(version)) {
-    fail(`${version} is not a valid version of ajv-cli (list available versions with 'npm view ajv-cli versions'`);
-  }
+      fail(`${version} is not a valid version of ajv-cli`);
+    }
 
     key = `ajv-cli-${version}-${process.env.RUNNER_OS}`;
     installDir = `${process.env.RUNNER_TEMP}/${key}`;
@@ -42,7 +42,16 @@ async function main() {
       core.endGroup();
       // Save installation directory to cache
       core.startGroup(`Caching installation directory with key ${key}`);
-      await cache.saveCache([installDir], key);
+      try {
+        await cache.saveCache([installDir], key);
+      // Workaround for race condition: https://github.com/actions/toolkit/issues/537
+      } catch (err) {
+        if (err.message.includes("Cache already exists")) {
+          core.info(`Cache entry ${key} has already been created by another worfklow`);
+        } else {
+          throw err;
+        }
+      }
       core.endGroup();
     // If cache has been found and restored
     } else {
