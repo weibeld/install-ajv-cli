@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/weibeld/install-ajv-cli#readme",
   "dependencies": {
+    "@actions/cache": "^1.0.2",
     "@actions/core": "^1.2.6"
   }
 }
