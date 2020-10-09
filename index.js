@@ -20,8 +20,8 @@ async function main() {
       version = execSync('npm view ajv-cli version').toString().trim();
       core.info(`Latest version of ajv-cli is ${version}`);
     } else if (!execSync('npm view ajv-cli versions').includes(version)) {
-      fail(`${version} is not a valid version of ajv-cli`);
-    }
+    fail(`${version} is not a valid version of ajv-cli (list available versions with 'npm view ajv-cli versions'`);
+  }
 
     key = `ajv-cli-${version}-${process.env.RUNNER_OS}`;
     installDir = `${process.env.RUNNER_TEMP}/${key}`;
