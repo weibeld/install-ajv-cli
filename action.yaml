@@ -1,6 +1,10 @@
 name: Install ajv-cli
 description: Installs ajv-cli (CLI for the ajv JSON Schema validator) on the job's runner
 author: Daniel Weibel
+inputs:
+  version:
+    description: The version of the ajv-cli package to install (by default, the latest version will be installed)
+    required: false
 runs:
   using: node12
   main: index.js
