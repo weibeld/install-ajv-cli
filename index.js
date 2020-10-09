@@ -4,11 +4,13 @@ const { exec, execSync } = require("child_process");
 
 function fail(err) {
   core.setFailed(err);
+  process.exit(1);
 }
 
 async function main() {
   try {
 
+    // Determine latest version or validate user-supplied version
     version = core.getInput('version');
     if (!version) {
       version = execSync('npm view ajv-cli version').toString().trim();
