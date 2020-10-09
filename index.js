@@ -1,6 +1,6 @@
 const core = require('@actions/core');
 const cache = require('@actions/cache');
-const { exec, execSync } = require("child_process");
+const { execSync } = require("child_process");
 
 function fail(err) {
   core.setFailed(err);
@@ -10,6 +10,10 @@ function fail(err) {
 async function main() {
   try {
 
+    if (process.env.RUNNER_OS == 'Windows') {
+      fail("This action currently does not support Windows runners");
+    }
+ 
     // Determine latest version or validate user-supplied version
     version = core.getInput('version');
     if (!version) {
@@ -18,7 +22,7 @@ async function main() {
       fail(`${version} is not a valid version of ajv-cli`);
     }
 
-    key = `ajv-cli-${version}`;
+    key = `ajv-cli-${version}-${process.env.RUNNER_OS}`;
     installDir = `${process.env.RUNNER_TEMP}/${key}`;
     if (typeof await cache.restoreCache([installDir], key) === 'undefined') {
       console.log("Cache miss");
