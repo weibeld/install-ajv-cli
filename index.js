@@ -27,7 +27,7 @@ async function main() {
     installDir = `${process.env.RUNNER_TEMP}/${key}`;
 
     // Restore installation directory from cache, if available
-    core.startGroup(`Checking cache for ajv-cli ${version}`);
+    core.startGroup(`Check cache for ajv-cli ${version} (key "${key})"`);
     _ = await cache.restoreCache([installDir], key)
 
     // If cache has not been found
@@ -35,19 +35,19 @@ async function main() {
       core.info("Not found");
       core.endGroup();
       // Create fresh installation of ajv-cli
-      core.startGroup(`Installing ajv-cli ${version}`)
+      core.startGroup(`Install ajv-cli ${version}`)
       cmd = `npm install -s --prefix ${installDir} ajv-cli@${version}`
       core.info(`${cmd}:`);
       core.info(execSync(cmd).toString().trim());
       core.endGroup();
       // Save installation directory to cache
-      core.startGroup(`Caching installation directory with key ${key}`);
+      core.startGroup(`Save ajv-cli ${version} installation to cache (key "${key}")`);
       try {
         await cache.saveCache([installDir], key);
       // Workaround for race condition: https://github.com/actions/toolkit/issues/537
       } catch (err) {
         if (err.message.includes("Cache already exists")) {
-          core.info(`Cache entry ${key} has already been created by another worfklow`);
+          core.info(`Cache entry "${key}" has already been created by another worfklow`);
         } else {
           throw err;
         }
@@ -56,14 +56,14 @@ async function main() {
     // If cache has been found and restored
     } else {
       core.endGroup();
-      core.info(`Found and restored ajv-cli ${version} from cache (${key})`);
+      core.info(`Found and restored ajv-cli ${version} from cache (key "${key}")`);
     }
     // Add ajv binary to PATH
     binDir = execSync(`npm bin --prefix ${installDir}`).toString().trim();
     core.addPath(binDir);
 
     // Verify installation
-    core.info("Verifying installation");
+    core.info("Verify installation");
     execSync(`PATH=${binDir}:$PATH ajv help`)
     core.info(`Installation of ajv-cli ${version} successful`);
   } catch (err) {
