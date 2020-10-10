@@ -23,7 +23,7 @@ async function main() {
       fail(`${version} is not a valid version of ajv-cli`);
     }
 
-    key = `ajv-cli-${version}-${process.env.RUNNER_OS}-node-${process.version}`;
+    key = `ajv-cli-${version}_node-${process.version}_${process.env.RUNNER_OS}`;
     installDir = `${process.env.RUNNER_TEMP}/${key}`;
 
     // Restore installation directory from cache, if available
