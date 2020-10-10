@@ -27,7 +27,7 @@ async function main() {
     installDir = `${process.env.RUNNER_TEMP}/${key}`;
 
     // Restore installation directory from cache, if available
-    core.startGroup(`Check cache for ajv-cli ${version} (key "${key})"`);
+    core.startGroup(`Check cache for ajv-cli ${version} (key "${key}")`);
     _ = await cache.restoreCache([installDir], key)
 
     // If cache has not been found
